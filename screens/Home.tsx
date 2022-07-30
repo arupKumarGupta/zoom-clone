@@ -5,20 +5,28 @@ import Searchbar from '../components/Searchbar';
 import MenuButtons from '../components/MenuButtons';
 import ContactsMenu from '../components/ContactsMenu';
 
-const Home = () => {
+import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
+import NavigationContext from '../context/NavigationContext';
+
+interface HomeProps {
+	navigation: StackNavigationHelpers;
+}
+const Home: React.FC<HomeProps> = ({ navigation }) => {
 	return (
-		<View style={styles.container}>
-			<SafeAreaView style={styles.safeArea}>
-				{/* Header */}
-				<Header />
-				{/* SearchBar */}
-				<Searchbar />
-				{/* Menubar */}
-				<MenuButtons />
-				{/* ContactOptions */}
-				<ContactsMenu />
-			</SafeAreaView>
-		</View>
+		<NavigationContext.Provider value={navigation}>
+			<View style={styles.container}>
+				<SafeAreaView style={styles.safeArea}>
+					{/* Header */}
+					<Header />
+					{/* SearchBar */}
+					<Searchbar />
+					{/* Menubar */}
+					<MenuButtons />
+					{/* ContactOptions */}
+					<ContactsMenu />
+				</SafeAreaView>
+			</View>
+		</NavigationContext.Provider>
 	);
 };
 

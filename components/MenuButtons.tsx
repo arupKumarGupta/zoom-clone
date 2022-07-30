@@ -5,28 +5,43 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
-import React from 'react';
+import React, { useContext } from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import NavigationContext from '../context/NavigationContext';
 
 interface MenuItem {
 	id: number | string;
 	name: string;
 	title: string;
 	color?: string;
+	screen?: string;
 }
 
 const menuItems: MenuItem[] = [
-	{ id: 1, name: 'video-camera', title: 'New Meeting', color: '#ff751f' },
+	{
+		id: 1,
+		name: 'video-camera',
+		title: 'New Meeting',
+		color: '#ff751f',
+		screen: 'Meeting',
+	},
 	{ id: 2, name: 'plus-square', title: 'Join' },
 	{ id: 3, name: 'calendar', title: 'Schedule' },
 	{ id: 4, name: 'upload', title: 'Share Screen' },
 ];
 
-const MenuButton: React.FC<MenuItem> = ({ title, name, color }) => {
+const MenuButton: React.FC<MenuItem> = ({ title, name, color, screen }) => {
+	const navigation = useContext(NavigationContext);
+
+	const navigate = () => {
+		if (screen) navigation?.navigate(screen);
+	};
+
 	return (
 		<View style={styles.menuButton}>
 			<TouchableOpacity
 				style={[{ backgroundColor: color ?? '#0470dc' }, styles.button]}
+				onPress={navigate}
 			>
 				<FontAwesome name={name} size={20} color="#efefef" />
 			</TouchableOpacity>
@@ -49,6 +64,7 @@ const MenuButtons = () => {
 							name={item.name}
 							title={item.title}
 							color={item.color}
+							screen={item.screen}
 						/>
 					)}
 				/>

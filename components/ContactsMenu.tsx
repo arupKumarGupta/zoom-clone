@@ -36,9 +36,7 @@ const contacts: IContact[] = [
 
 const Contact: React.FC<IContact> = ({ name, type, photo }) => {
 	let avatar = null;
-	useEffect(() => {
-		console.log('arup', photo);
-	}, [photo]);
+
 	if (photo) {
 		avatar = <Image source={photo} style={styles.image} />;
 	} else {
