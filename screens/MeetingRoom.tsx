@@ -1,55 +1,52 @@
+import { StyleSheet, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import StartMeeting from '../components/StartMeeting';
+import { Socket, connect } from 'socket.io-client';
 import {
-	NativeSyntheticEvent,
-	StyleSheet,
-	Text,
-	TextInput,
-	TextInputChangeEventData,
-	TouchableOpacity,
-	View,
-} from 'react-native';
-import React, { useState } from 'react';
-
+	CONNECTION,
+	GET_ROOM_USERS,
+	JOIN_ROOM,
+	USER_CONNECTED,
+} from '../contants/socketEvents';
+let socket: Socket;
 const MeetingRoom = () => {
 	const [name, setName] = useState<string>('');
-	const [roomId, setRoomId] = useState<string>();
+	const [roomId, setRoomId] = useState<string>('');
+	const [activeUsers, setActiveUsers] = useState<any[]>([]);
+	useEffect(() => {
+		const API_URL = `http://localhost:3001`;
+		socket = connect(API_URL);
+		return () => {
+			socket.disconnect();
+			socket.close();
+		};
+	}, []);
+
+	useEffect(() => {
+		if (!socket) {
+			return;
+		}
+		socket.on(CONNECTION, (data) => {
+			console.log('connected!', data);
+		});
+		socket.on(GET_ROOM_USERS, (users) => {
+			setActiveUsers(users);
+		});
+	}, []);
+
+	const onStartMeetingClicked = () => {
+		socket.emit(JOIN_ROOM, { name, roomId });
+	};
+
 	return (
 		<View style={styles.container}>
-			<View style={styles.startMeetingContainer}>
-				<View style={styles.info}>
-					<TextInput
-						placeholder="Enter name"
-						style={styles.textInput}
-						onChange={(
-							event: NativeSyntheticEvent<TextInputChangeEventData>
-						) => {
-							setName(event.nativeEvent.text);
-						}}
-						value={name}
-						placeholderTextColor="#bdb9b9"
-					/>
-				</View>
-				<View style={styles.info}>
-					<TextInput
-						placeholder="Enter Room Id"
-						style={styles.textInput}
-						onChange={(
-							event: NativeSyntheticEvent<TextInputChangeEventData>
-						) => {
-							setRoomId(event.nativeEvent.text);
-						}}
-						value={roomId}
-						placeholderTextColor="#bdb9b9"
-					/>
-				</View>
-
-				<View>
-					<TouchableOpacity style={styles.startMeetingButton}>
-						<Text style={styles.startMeetingButtonText}>
-							Start Meeting
-						</Text>
-					</TouchableOpacity>
-				</View>
-			</View>
+			<StartMeeting
+				name={name}
+				roomId={roomId}
+				setRoomId={setRoomId}
+				setName={setName}
+				onStartMeetingClicked={onStartMeetingClicked}
+			/>
 		</View>
 	);
 };
